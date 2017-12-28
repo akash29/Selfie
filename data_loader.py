@@ -103,8 +103,8 @@ class DataLoader(object):
         test_images_tf = convert_to_tensor(test_images,dtype=tf.string)
         train_labels_tf = convert_to_tensor(list(self.y_train_df['sex']),dtype=dtypes.int32)
         test_labels_tf = convert_to_tensor(list(self.y_test_df['sex']),dtype = dtypes.int32)
-        self.train_data = Dataset.from_tensor_slices((train_images_tf,train_labels_tf))
-        self.test_data  = Dataset.from_tensor_slices((test_images_tf,test_labels_tf))
+        self.train_data = tf.data.Dataset.from_tensor_slices((train_images_tf,train_labels_tf))
+        self.test_data  = tf.data.Dataset.from_tensor_slices((test_images_tf,test_labels_tf))
 
 
     def distort_img_train(self, img_file, labels):
@@ -131,8 +131,8 @@ class DataLoader(object):
 
     def get_data(self, batch_size,is_train_data = True,num_threads = 6):
         if is_train_data:
-            data = self.train_data.map(self.distort_img_train,num_threads=num_threads)
+            data = self.train_data.map(self.distort_img_train, num_parallel_calls = num_threads)
         else:
-            data = self.test_data.map(self.distort_img_test, num_threads = num_threads)
+            data = self.test_data.map(self.distort_img_test, num_parallel_calls = num_threads)
         data = data.batch(batch_size)
         return data

@@ -4,7 +4,7 @@ import numpy as np
 
 
 def run_resnet():
-    dl = DataLoader("Selfie-dataset")
+    dl = DataLoader("../Selfie-dataset")
     rs = ResNet()
     dl.read_data()
     dl.create_train_test()

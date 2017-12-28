@@ -88,32 +88,32 @@ class ResNet(object):
         X = tf.layers.max_pooling2d(X,strides=(2,2),pool_size=(3,3))
 
         #stage_2
-        X = convolution_block(X,f=3,s=1,filters=[64,64,256],stage=2,block='a')
-        X = identity_block(X,filters=[64,64,256],stage=2,f=3,block='b')
-        X = identity_block(X,filters=[64,64,256],stage=2,f=3,block='c')
+        X = self.convolution_block(X,f=3,s=1,filters=[64,64,256],stage=2,block='a')
+        X = self.identity_block(X,filters=[64,64,256],stage=2,f=3,block='b')
+        X = self.identity_block(X,filters=[64,64,256],stage=2,f=3,block='c')
 
         #stage_3
-        X = convolution_block(X,f=3,s=2,filters=[128,128,512],stage=3,block='a')
-        X = identity_block(X,filters=[128,128,512],stage=3,f=3,block='b')
-        X = identity_block(X,filters=[128,128,512],stage=3,f=3,block='c')
-        X = identity_block(X,filters=[128,128,512],stage=3,f=3,block='d')
+        X = self.convolution_block(X,f=3,s=2,filters=[128,128,512],stage=3,block='a')
+        X = self.identity_block(X,filters=[128,128,512],stage=3,f=3,block='b')
+        X = self.identity_block(X,filters=[128,128,512],stage=3,f=3,block='c')
+        X = self.identity_block(X,filters=[128,128,512],stage=3,f=3,block='d')
 
         #stage_4
-        X = convolution_block(X,f=3,s=2,filters=[256,256,1024],stage=4,block='a')
-        X = identity_block(X,filters=[256,256,1024],stage=4,f=3,block='b')
-        X = identity_block(X,filters=[256,256,1024],stage=4,f=3,block='c')
-        X = identity_block(X,filters=[256,256,1024],stage=4,f=3,block='d')
-        X = identity_block(X,filters=[256,256,1024],stage=4,f=3,block='e')
-        X = identity_block(X,filters=[256,256,1024],stage=4,f=3,block='f')
+        X = self.convolution_block(X,f=3,s=2,filters=[256,256,1024],stage=4,block='a')
+        X = self.identity_block(X,filters=[256,256,1024],stage=4,f=3,block='b')
+        X = self.identity_block(X,filters=[256,256,1024],stage=4,f=3,block='c')
+        X = self.identity_block(X,filters=[256,256,1024],stage=4,f=3,block='d')
+        X = self.identity_block(X,filters=[256,256,1024],stage=4,f=3,block='e')
+        X = self.identity_block(X,filters=[256,256,1024],stage=4,f=3,block='f')
 
         #stage_5
-        X = convolution_block(X,f=3,s=2,filters=[512,512,2048],stage=5,block='a')
-        X = identity_block(X,filters=[512,512,2048],stage=5,f=3,block='b')
-        X = identity_block(X,filters=[512,512,2048],stage=5,f=3,block='c')
+        X = self.convolution_block(X,f=3,s=2,filters=[512,512,2048],stage=5,block='a')
+        X = self.identity_block(X,filters=[512,512,2048],stage=5,f=3,block='b')
+        X = self.identity_block(X,filters=[512,512,2048],stage=5,f=3,block='c')
 
         X = tf.layers.average_pooling2d(X,pool_size=(2,2),strides=(1,1),name='avg_pool')
         X = tf.layers.flatten(X,name='flatten')
-        X = tf.layers.dense(X,units=2,activation=tf.nn.softmax(),
+        X = tf.layers.dense(X,units=2,activation=tf.nn.softmax,
                             kernel_regularizer=tf.contrib.layers.l2_regularizer(),
                             kernel_initializer=tf.contrib.layers.xavier_initializer(seed=0))
 

@@ -35,7 +35,16 @@ class DataLoader(object):
         self.files = None
 
 
+    def load_data(self):
+        self.read_data()
+        self.create_train_test()
+        self.shuffle()
+        self.create_train_test_df()
+        self.create_train_test_data()
+
+
     def read_data(self):
+        print("Directory ",self.directory)
         self.df_y = pd.read_csv(self.directory+"/selfie_dataset.txt", sep="\s+",header=None,usecols=[0,3],names=['name','sex'])
         if self.verbose:
             print(self.df_y.shape)
@@ -58,24 +67,26 @@ class DataLoader(object):
         """
         Shuffle the contents of the directory
         """
-        print("inside shuffle")
-        self.files = [i for i in os.listdir(self.directory+'/images/')]
-        if self.verbose:
-            print(self.files[0])
-            print("Length of files",len(self.files))
-        self.files.remove(self.files[0])
-        np.random.shuffle(self.files)
-        try:
-            os.mkdir(self.directory+'/images/Train')
-            os.mkdir(self.directory+'/images/Test')
-            for i,j in enumerate(self.files):
-                if i <= self.num_train:
-                    shutil.move(os.path.join(self.directory+'/images/',j), os.path.join(self.directory+'/images/Train/',j))
-                else:
-                    shutil.move(os.path.join(self.directory+'/images/',j), os.path.join(self.directory+'/images/Test/',j))
-        except OSError as e:
-            if e.errno != errno.EEXIST:
-                raise
+        if not os.path.exists(self.directory+'/images/Train') and not os.path.exists(self.directory+'/images/Test'):
+            self.files = [i for i in os.listdir(self.directory+'/images/')]
+            if self.verbose:
+                print(self.files[0])
+                print("Length of files",len(self.files))
+            self.files.remove(self.files[0])
+            np.random.shuffle(self.files)
+            try:
+                os.mkdir(self.directory+'/images/Train')
+                os.mkdir(self.directory+'/images/Test')
+                for i,j in enumerate(self.files):
+                    if i <= self.num_train:
+                        shutil.move(os.path.join(self.directory+'/images/',j), os.path.join(self.directory+'/images/Train/',j))
+                    else:
+                        shutil.move(os.path.join(self.directory+'/images/',j), os.path.join(self.directory+'/images/Test/',j))
+            except OSError as e:
+                if e.errno != errno.EEXIST:
+                    raise
+        else:
+            print("Skipping Shuffle as the Train Test Directories exist")
 
 
     def create_train_test_df(self):
@@ -97,8 +108,11 @@ class DataLoader(object):
         """
         Create train and test data from the data set
         """
-        train_images = [os.path.abspath(os.path.join(os.sep,self.directory+'/images/Train/',i)) for i in os.listdir(self.directory+'/images/Train/')]
-        test_images = [os.path.abspath(os.path.join(os.sep,self.directory+'/images/Test/',i)) for i in os.listdir(self.directory+'/images/Test/')]
+        #train_images = [os.path.abspath(os.path.join(os.sep,self.directory+'/images/Train/',i)) for i in os.listdir(self.directory+'/images/Train/')]
+        #test_images = [os.path.abspath(os.path.join(os.sep,self.directory+'/images/Test/',i)) for i in os.listdir(self.directory+'/images/Test/')]
+        train_images = [os.path.abspath(os.path.join(self.directory+'/images/Train/',i)) for i in os.listdir(self.directory+'/images/Train/')]
+        test_images = [os.path.abspath(os.path.join(self.directory+'/images/Test/',i)) for i in os.listdir(self.directory+'/images/Test/')]
+
         train_images_tf = convert_to_tensor(train_images,dtype=tf.string)
         test_images_tf = convert_to_tensor(test_images,dtype=tf.string)
         train_labels_tf = convert_to_tensor(list(self.y_train_df['sex']),dtype=dtypes.int32)
@@ -115,7 +129,8 @@ class DataLoader(object):
         distort_img = tf.image.random_flip_left_right(img_resize,seed=tf.set_random_seed(10))
         img = tf.image.random_brightness(distort_img,max_delta=2.0,seed=10)
         img_std = tf.image.per_image_standardization(img)
-
+        #print("Image ",img_std)
+        #print("One Hot", one_hot_labels)
         return img_std,one_hot_labels
 
 
@@ -125,7 +140,8 @@ class DataLoader(object):
         img_decode = tf.image.decode_jpeg(img_str,channels=3)
         img_resize = tf.image.resize_image_with_crop_or_pad(img_decode,target_height=self.IMAGE_SIZE,target_width=self.IMAGE_SIZE)
         img_std = tf.image.per_image_standardization(img_resize)
-
+        #print("Image ",img_std)
+        #print("One Hot", one_hot_labels)
         return img_std,one_hot_labels
 
 
@@ -134,5 +150,6 @@ class DataLoader(object):
             data = self.train_data.map(self.distort_img_train, num_parallel_calls = num_threads)
         else:
             data = self.test_data.map(self.distort_img_test, num_parallel_calls = num_threads)
+        print(data)
         data = data.batch(batch_size)
         return data

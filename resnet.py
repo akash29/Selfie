@@ -80,9 +80,9 @@ class ResNet(object):
     def resNet_50(self, X):
 
         ##implement zero padding here
-
+        print("I am here")
         #stage_1
-        X = tf.layers.conv2d(X,filters=64,kernel_size=(7,7),strides=(2,2),name='conv1')
+        X = tf.layers.conv2d(X,filters=64,kernel_size=(7,7),strides=(2,2),name='conv1', dtype='float32')
         X = tf.layers.batch_normalization(X,axis=3,name='batch_norm1')
         X = tf.nn.relu(X)
         X = tf.layers.max_pooling2d(X,strides=(2,2),pool_size=(3,3))

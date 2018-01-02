@@ -4,39 +4,6 @@ import numpy as np
 import tensorflow as tf
 
 
-def run():
-    sess = tf.Session()
-    dl = DataLoader("../Selfie-dataset")
-    rs = ResNet()
-    dl.load_data()
-    training_data = dl.get_data(100)
-    test_data = dl.get_data(100, is_train_data=False)
-    iterator = training_data.make_one_shot_iterator()
-    print(training_data.output_types)
-    print(training_data.output_shapes)
-
-    #x = tf.placeholder(tf.float32, training_data.output_types)
-    #y = tf.placeholder(tf.float32, training_data.output_shapes)
-
-    x = tf.placeholder(tf.float32, [None, 300, 300, 3])
-    y = tf.placeholder(tf.float32, [None, 2])
-
-    #training_init_op = data.make_initializable_iterator()
-    #v = iterator.make_initializer(data)
-    #print("After Initialzer ", type(training_init_op))
-    next_element = iterator.get_next()
-
-    for i in range(2):
-        img_batch, label_batch = sess.run(next_element)
-        #print("Image Batch ",img_batch)
-        #print("Label Batch ",label_batch)
-        sess.run(training_data, feed_dict={x:img_batch, y:label_batch})
-
-
-
-    #value = sess.run(next_element)
-    #print(value)
-
 
 def run_conv():
     session = tf.Session()

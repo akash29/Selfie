@@ -56,12 +56,12 @@ class ResNet(object):
         X = tf.layers.batch_normalization(X,axis=3,name=bn_name_base+'2a')
         X = tf.nn.relu(X)
 
-        X= tf.layers.conv2d(X,filters=F1,kernel_size=(f,f),strides=(1,1),padding='same',name=conv_name_base+'2b'
+        X= tf.layers.conv2d(X,filters=F2,kernel_size=(f,f),strides=(1,1),padding='same',name=conv_name_base+'2b'
                            ,kernel_initializer=tf.contrib.layers.xavier_initializer_conv2d(seed=0))
         X = tf.layers.batch_normalization(X,axis=3,name=bn_name_base+'2b')
         X = tf.nn.relu(X)
 
-        X= tf.layers.conv2d(X,filters=F1,kernel_size=(1,1),strides=(1,1),padding='valid',name=conv_name_base+'2c'
+        X= tf.layers.conv2d(X,filters=F3,kernel_size=(1,1),strides=(1,1),padding='valid',name=conv_name_base+'2c'
                            ,kernel_initializer=tf.contrib.layers.xavier_initializer_conv2d(seed=0))
         X = tf.layers.batch_normalization(X,axis=3,name=bn_name_base+'2c')
 
@@ -82,7 +82,7 @@ class ResNet(object):
         ##implement zero padding here
         print("I am here")
         #stage_1
-        X = tf.layers.conv2d(X,filters=64,kernel_size=(7,7),strides=(2,2),name='conv1', dtype='float32')
+        X = tf.layers.conv2d(X,filters=64,kernel_size=(7,7),strides=(2,2),name='conv1')
         X = tf.layers.batch_normalization(X,axis=3,name='batch_norm1')
         X = tf.nn.relu(X)
         X = tf.layers.max_pooling2d(X,strides=(2,2),pool_size=(3,3))
@@ -113,9 +113,12 @@ class ResNet(object):
 
         X = tf.layers.average_pooling2d(X,pool_size=(2,2),strides=(1,1),name='avg_pool')
         X = tf.layers.flatten(X,name='flatten')
-        X = tf.layers.dense(X,units=2,activation=tf.nn.softmax,
-                            kernel_regularizer=tf.contrib.layers.l2_regularizer(),
+        Z = tf.layers.dense(X,units=2,activation=None,
+                            kernel_regularizer=tf.contrib.layers.l2_regularizer(scale=0.1),
                             kernel_initializer=tf.contrib.layers.xavier_initializer(seed=0))
 
-        print("X ",X)
-        return X
+        return Z
+
+    def compute_cost(self,Z,Y):
+        cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=Z,labels=Y))
+        return cost

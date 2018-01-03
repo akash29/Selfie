@@ -5,7 +5,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 
-def run_conv(learning_rate = 0.009, num_epochs = 1, batch_size = 1, print_cost = True):
+def run_conv(learning_rate = 0.009, num_epochs = 100, batch_size = 100, print_cost = True):
 
     dl = DataLoader("../Selfie-dataset")
     rs = ResNet()

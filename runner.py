@@ -5,7 +5,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 
-def run_conv(learning_rate = 0.009, num_epochs = 100, batch_size = 100, print_cost = True):
+def run_conv(learning_rate=0.009, num_epochs=100, batch_size=100, print_cost=True):
 
     dl = DataLoader("../Selfie-dataset")
     rs = ResNet()
@@ -86,7 +86,7 @@ def run_conv(learning_rate = 0.009, num_epochs = 100, batch_size = 100, print_co
         plt.ylabel("Cost")
         plt.title("cost characteristics with learning rate {}".format(learning_rate))
         plt.savefig("Cost characteristics-Learning rate {}".format(learning_rate))
-        plt.show()
+        #plt.show()
 
 
 
